@@ -1,8 +1,155 @@
 import { useState } from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom'
+import { affirmationsAPI } from './api.js'
+import SavedAffirmations from './components/SavedAffirmations.jsx'
+import Journey from './components/Journey.jsx'
 import './App.css'
+
+function MainForm({
+  formData, setFormData, affirmation, setAffirmation, showResult, setShowResult, showSaved, setShowSaved, selectedAffirmation, setSelectedAffirmation, saving, setSaving, saveError, setSaveError, generateAffirmation, saveAffirmation, copyToClipboard, resetForm, handleSelectAffirmation
+}) {
+  const navigate = useNavigate();
+
+  const handleJourneyClick = () => {
+    if (!formData.username.trim()) {
+      alert('Please enter your name to view your journey.');
+      return;
+    }
+    navigate(`/journey?username=${encodeURIComponent(formData.username)}`);
+  };
+
+  return (
+    <div className="app">
+      <header className="header">
+        <h1>✨ Custom Affirmation Generator ✨</h1>
+        <p>Create your personalized affirmation to manifest your dreams</p>
+        <div className="user-menu">
+          <button onClick={() => setShowSaved(true)} className="saved-btn">
+            📚 Saved Affirmations
+          </button>
+          <button onClick={handleJourneyClick} className="journey-btn">
+            🛤️ My Journey
+          </button>
+        </div>
+      </header>
+      {!showResult ? (
+        <div className="form-container">
+          <form onSubmit={(e) => { e.preventDefault(); generateAffirmation(); }}>
+            <div className="form-group">
+              <label htmlFor="username">Your Name (to save affirmations)</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={formData.username}
+                onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                placeholder="Enter your name..."
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="desire">What do you want at the moment in your life?</label>
+              <textarea
+                id="desire"
+                name="desire"
+                value={formData.desire}
+                onChange={e => setFormData(prev => ({ ...prev, desire: e.target.value }))}
+                placeholder="e.g., inner peace, financial abundance, meaningful relationships..."
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="fear">What is your fear?</label>
+              <textarea
+                id="fear"
+                name="fear"
+                value={formData.fear}
+                onChange={e => setFormData(prev => ({ ...prev, fear: e.target.value }))}
+                placeholder="e.g., fear of failure, fear of rejection, fear of the unknown..."
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="blessing">Is there anyone's blessing you want to have?</label>
+              <input
+                type="text"
+                id="blessing"
+                name="blessing"
+                value={formData.blessing}
+                onChange={e => setFormData(prev => ({ ...prev, blessing: e.target.value }))}
+                placeholder="e.g., Jesus, Guru Nanak, Goddess Athena, Harry Potter..."
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="outcome">What is your ideal outcome?</label>
+              <textarea
+                id="outcome"
+                name="outcome"
+                value={formData.outcome}
+                onChange={e => setFormData(prev => ({ ...prev, outcome: e.target.value }))}
+                placeholder="Describe your perfect scenario..."
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="address">How should we address you?</label>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                value={formData.address}
+                onChange={e => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                placeholder="e.g., my dear friend, beautiful soul, warrior..."
+              />
+            </div>
+            <button type="submit" className="generate-btn">
+              Generate My Affirmation ✨
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div className="result-container">
+          <div className="affirmation-card">
+            <h2>Your Custom Affirmation</h2>
+            <div className="affirmation-text">
+              {affirmation}
+            </div>
+            {saveError && (
+              <div className="save-error">
+                {saveError}
+              </div>
+            )}
+            <div className="action-buttons">
+              <button onClick={copyToClipboard} className="copy-btn">
+                📋 Copy Affirmation
+              </button>
+              <button 
+                onClick={saveAffirmation} 
+                className="save-btn"
+                disabled={saving}
+              >
+                {saving ? '💾 Saving...' : '💾 Save Affirmation'}
+              </button>
+              <button onClick={resetForm} className="reset-btn">
+                🔄 Create New Affirmation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Saved Affirmations Modal */}
+      {showSaved && (
+        <SavedAffirmations
+          onClose={() => setShowSaved(false)}
+          onSelectAffirmation={handleSelectAffirmation}
+        />
+      )}
+    </div>
+  )
+}
 
 function App() {
   const [formData, setFormData] = useState({
+    username: '',
     desire: '',
     fear: '',
     blessing: '',
@@ -11,6 +158,10 @@ function App() {
   })
   const [affirmation, setAffirmation] = useState('')
   const [showResult, setShowResult] = useState(false)
+  const [showSaved, setShowSaved] = useState(false)
+  const [selectedAffirmation, setSelectedAffirmation] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -228,6 +379,30 @@ function App() {
 
     setAffirmation(affirmation)
     setShowResult(true)
+    setSaveError('')
+  }
+
+  const saveAffirmation = async () => {
+    if (!formData.username.trim()) {
+      setSaveError('Please enter a username to save your affirmation')
+      return
+    }
+
+    setSaving(true)
+    setSaveError('')
+
+    try {
+      await affirmationsAPI.save({
+        ...formData,
+        generated_affirmation: affirmation
+      })
+      alert('Affirmation saved successfully! ✨')
+    } catch (error) {
+      setSaveError('Failed to save affirmation. Please try again.')
+      console.error('Error saving affirmation:', error)
+    } finally {
+      setSaving(false)
+    }
   }
 
   const copyToClipboard = async () => {
@@ -241,6 +416,7 @@ function App() {
 
   const resetForm = () => {
     setFormData({
+      username: '',
       desire: '',
       fear: '',
       blessing: '',
@@ -249,102 +425,68 @@ function App() {
     })
     setAffirmation('')
     setShowResult(false)
+    setSaveError('')
+  }
+
+  const handleSelectAffirmation = (affirmation) => {
+    setSelectedAffirmation(affirmation)
+    setShowSaved(false)
+    setShowResult(true)
+    setAffirmation(affirmation.generated_affirmation)
+    setFormData({
+      username: affirmation.username,
+      desire: affirmation.desire,
+      fear: affirmation.fear || '',
+      blessing: affirmation.blessing || '',
+      outcome: affirmation.outcome,
+      address: affirmation.address || ''
+    })
   }
 
   return (
-    <div className="app">
-      <header className="header">
-        <h1>✨ Custom Affirmation Generator ✨</h1>
-        <p>Create your personalized affirmation to manifest your dreams</p>
-      </header>
-
-      {!showResult ? (
-        <div className="form-container">
-          <form onSubmit={(e) => { e.preventDefault(); generateAffirmation(); }}>
-            <div className="form-group">
-              <label htmlFor="desire">What do you want at the moment in your life?</label>
-              <textarea
-                id="desire"
-                name="desire"
-                value={formData.desire}
-                onChange={handleInputChange}
-                placeholder="e.g., inner peace, financial abundance, meaningful relationships..."
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="fear">What is your fear?</label>
-              <textarea
-                id="fear"
-                name="fear"
-                value={formData.fear}
-                onChange={handleInputChange}
-                placeholder="e.g., fear of failure, fear of rejection, fear of the unknown..."
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="blessing">Is there anyone's blessing you want to have?</label>
-              <input
-                type="text"
-                id="blessing"
-                name="blessing"
-                value={formData.blessing}
-                onChange={handleInputChange}
-                placeholder="e.g., Jesus, Guru Nanak, Goddess Athena, Harry Potter..."
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="outcome">What is your ideal outcome?</label>
-              <textarea
-                id="outcome"
-                name="outcome"
-                value={formData.outcome}
-                onChange={handleInputChange}
-                placeholder="Describe your perfect scenario..."
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="address">How should we address you?</label>
-              <input
-                type="text"
-                id="address"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="e.g., my dear friend, beautiful soul, warrior..."
-              />
-            </div>
-
-            <button type="submit" className="generate-btn">
-              Generate My Affirmation ✨
-            </button>
-          </form>
-        </div>
-      ) : (
-        <div className="result-container">
-          <div className="affirmation-card">
-            <h2>Your Custom Affirmation</h2>
-            <div className="affirmation-text">
-              {affirmation}
-            </div>
-            <div className="action-buttons">
-              <button onClick={copyToClipboard} className="copy-btn">
-                📋 Copy Affirmation
-              </button>
-              <button onClick={resetForm} className="reset-btn">
-                🔄 Create New Affirmation
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+    <Routes>
+      <Route path="/" element={
+        <MainForm
+          formData={formData}
+          setFormData={setFormData}
+          affirmation={affirmation}
+          setAffirmation={setAffirmation}
+          showResult={showResult}
+          setShowResult={setShowResult}
+          showSaved={showSaved}
+          setShowSaved={setShowSaved}
+          selectedAffirmation={selectedAffirmation}
+          setSelectedAffirmation={setSelectedAffirmation}
+          saving={saving}
+          setSaving={setSaving}
+          saveError={saveError}
+          setSaveError={setSaveError}
+          generateAffirmation={generateAffirmation}
+          saveAffirmation={saveAffirmation}
+          copyToClipboard={copyToClipboard}
+          resetForm={resetForm}
+          handleSelectAffirmation={handleSelectAffirmation}
+        />
+      } />
+      <Route path="/journey" element={<JourneyPage />} />
+    </Routes>
   )
 }
 
-export default App
+// JourneyPage wrapper to extract username from query param
+import { useLocation } from 'react-router-dom'
+function JourneyPage() {
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const username = params.get('username') || '';
+  const navigate = useNavigate();
+  return (
+    <Journey
+      username={username}
+      onClose={() => navigate(-1)}
+      onSelectAffirmation={() => {}}
+    />
+  );
+}
+
+export default App;

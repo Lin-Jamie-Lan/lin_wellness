@@ -1,0 +1,463 @@
+.journey-page-bg {
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom, #b7e4c7 0%, #95d5b2 40%, #74c69d 100%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.mountain-svg {
+  width: 100vw;
+  height: 220px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.mountain-svg svg stop[offset="0%"] {
+  stop-color: #e0b07a !important;
+}
+.mountain-svg svg stop[offset="100%"] {
+  stop-color: #a67c52 !important;
+}
+.mountain-svg svg path[stroke] {
+  stroke: #b48a5a !important;
+}
+
+.journey-header.scenic {
+  position: relative;
+  z-index: 2;
+  background: transparent;
+  color: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0 10px 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.journey-header.scenic h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0 auto;
+  color: #184d27;
+  text-shadow: 0 2px 8px #b7e4c7;
+}
+
+.back-btn {
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #40916c;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(64,145,108,0.15);
+  transition: background 0.2s;
+  z-index: 3;
+}
+.back-btn:hover {
+  background: #184d27;
+}
+
+.journey-scenic-container {
+  position: relative;
+  z-index: 2;
+  width: 100vw;
+  max-width: 900px;
+  margin: 0 auto;
+  padding-top: 40px;
+  min-height: 70vh;
+  height: 100%;
+}
+
+.road.scenic {
+  position: relative;
+  width: 100%;
+  min-height: 600px;
+  margin: 0 auto;
+  height: 100%;
+}
+
+/* Winding road using SVG path */
+.road-line.scenic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.road-line.scenic::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 800' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='roadGradient' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%238b4513;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%23a0522d;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b4513;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M 50 100 Q 150 80, 250 120 T 450 100 T 650 140 T 850 120 L 850 140 Q 650 160, 450 140 T 250 160 T 50 140 Z' fill='url(%23roadGradient)' stroke='%2352b788' stroke-width='3'/%3E%3Cpath d='M 50 100 Q 150 80, 250 120 T 450 100 T 650 140 T 850 120' fill='none' stroke='%23fff' stroke-width='1' stroke-dasharray='10,5' opacity='0.6'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.journey-pin.scenic {
+  position: absolute;
+  width: 320px;
+  max-width: 90vw;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  transition: transform 0.2s;
+}
+
+/* Position pins along the winding road */
+.journey-pin.scenic:nth-child(1) {
+  left: 15%;
+  top: 120px;
+  flex-direction: row-reverse;
+}
+
+.journey-pin.scenic:nth-child(2) {
+  left: 65%;
+  top: 240px;
+}
+
+.journey-pin.scenic:nth-child(3) {
+  left: 25%;
+  top: 360px;
+  flex-direction: row-reverse;
+}
+
+.journey-pin.scenic:nth-child(4) {
+  left: 70%;
+  top: 480px;
+}
+
+.journey-pin.scenic:nth-child(5) {
+  left: 20%;
+  top: 600px;
+  flex-direction: row-reverse;
+}
+
+.journey-pin.scenic:nth-child(6) {
+  left: 75%;
+  top: 720px;
+}
+
+.journey-pin.scenic:nth-child(7) {
+  left: 30%;
+  top: 840px;
+  flex-direction: row-reverse;
+}
+
+.journey-pin.scenic:nth-child(8) {
+  left: 60%;
+  top: 960px;
+}
+
+.journey-pin.scenic:nth-child(9) {
+  left: 10%;
+  top: 1080px;
+  flex-direction: row-reverse;
+}
+
+.journey-pin.scenic:nth-child(10) {
+  left: 80%;
+  top: 1200px;
+}
+
+.journey-pin.scenic:hover {
+  transform: scale(1.04) translateY(-4px);
+  z-index: 3;
+}
+
+.pin-marker.scenic {
+  position: relative;
+  z-index: 3;
+  margin: 0 18px;
+}
+.pin-dot.scenic {
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle, #ffd700 60%, #ffed4e 100%);
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 18px #ffd70099;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 18px #ffd70099; }
+  50% { box-shadow: 0 0 32px #ffd700cc; }
+}
+.pin-line.scenic {
+  display: none;
+}
+
+.pin-content.scenic {
+  background: linear-gradient(135deg, #e9f5e1 60%, #b7e4c7 100%);
+  border: 2px solid #52b788;
+  border-radius: 16px;
+  padding: 18px 22px;
+  min-width: 160px;
+  box-shadow: 0 4px 18px #40916c22;
+  font-family: inherit;
+  transition: box-shadow 0.2s;
+}
+.journey-pin.scenic:hover .pin-content.scenic {
+  box-shadow: 0 8px 32px #40916c44;
+  border-color: #184d27;
+}
+.pin-summary.scenic {
+  color: #184d27;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+.pin-timestamp.scenic {
+  color: #40916c;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.journey-pin.scenic.always-visible {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  position: absolute;
+  z-index: 3;
+  min-width: 220px;
+  max-width: 340px;
+  pointer-events: auto;
+}
+
+.tree-deco {
+  margin-right: 10px;
+  margin-bottom: -8px;
+  z-index: 2;
+}
+
+.pin-content.scenic.card {
+  background: #fffbe9;
+  border: 2px solid #b7e4c7;
+  border-radius: 16px;
+  box-shadow: 0 4px 18px #40916c22;
+  padding: 18px 22px;
+  min-width: 180px;
+  max-width: 260px;
+  font-family: inherit;
+  transition: box-shadow 0.2s;
+  margin-bottom: 10px;
+  margin-left: 0;
+  margin-right: 0;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.affirmation-card-text {
+  color: #184d27;
+  font-size: 1rem;
+  line-height: 1.4;
+  background: rgba(255,255,255,0.7);
+  padding: 10px 0 0 0;
+  border-radius: 0;
+  border: none;
+  font-style: italic;
+}
+
+.empty-journey {
+  padding: 80px 40px;
+  text-align: center;
+  color: #184d27;
+}
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+.empty-journey h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  color: #52b788;
+}
+.empty-journey p {
+  margin: 0;
+  opacity: 0.8;
+  font-size: 1rem;
+}
+
+.loading, .error {
+  padding: 60px 0;
+  text-align: center;
+  color: #184d27;
+  font-size: 1.2rem;
+}
+
+.open-card-btn, .close-card-btn {
+  background: linear-gradient(135deg, #40916c 0%, #52b788 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(64, 145, 108, 0.15);
+}
+.open-card-btn:hover, .close-card-btn:hover {
+  background: #184d27;
+}
+
+.close-x-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: #388e3c;
+  cursor: pointer;
+  z-index: 20;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+.close-x-btn:hover {
+  color: #184d27;
+}
+
+.journey-pin.scenic.always-visible.open {
+  z-index: 10 !important;
+}
+
+.journey-pin.scenic.always-visible.open .pin-content.scenic.card {
+  box-shadow: 0 8px 32px #40916c33, 0 0 0 4px #b7e4c7;
+  border-color: #388e3c;
+}
+
+.journey-pin.scenic {
+  /* Remove z-index on hover to avoid conflict with open state */
+  transition: transform 0.2s;
+}
+
+.expanded-details {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #b7e4c7;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.expanded-details .detail-item label {
+  color: #40916c;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.expanded-details .detail-item p {
+  margin: 0;
+  color: #184d27;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.7);
+  padding: 6px 10px;
+  border-radius: 6px;
+  border-left: 3px solid #52b788;
+}
+.expanded-details .affirmation-card-text {
+  color: #184d27;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.7);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #b7e4c7;
+  font-style: italic;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .journey-scenic-container {
+    max-width: 100vw;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .journey-pin.scenic {
+    width: 90vw;
+    min-width: 0;
+  }
+  .journey-pin.scenic:nth-child(1) { left: 5%; }
+  .journey-pin.scenic:nth-child(2) { left: 55%; }
+  .journey-pin.scenic:nth-child(3) { left: 15%; }
+  .journey-pin.scenic:nth-child(4) { left: 60%; }
+  .journey-pin.scenic:nth-child(5) { left: 10%; }
+  .journey-pin.scenic:nth-child(6) { left: 65%; }
+  .journey-pin.scenic:nth-child(7) { left: 20%; }
+  .journey-pin.scenic:nth-child(8) { left: 50%; }
+  .journey-pin.scenic:nth-child(9) { left: 0%; }
+  .journey-pin.scenic:nth-child(10) { left: 70%; }
+  
+  .journey-pin.scenic.always-visible {
+    min-width: 120px;
+    max-width: 90vw;
+  }
+  .pin-content.scenic.card {
+    min-width: 100px;
+    max-width: 90vw;
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+  .journey-pin.scenic.always-visible.open .pin-content.scenic.card {
+    min-width: 180px;
+    max-width: 90vw;
+  }
+}
+@media (max-width: 600px) {
+  .journey-header.scenic h2 {
+    font-size: 1.2rem;
+  }
+  .journey-scenic-container {
+    padding-top: 90px;
+  }
+  .mountain-svg {
+    height: 70px;
+  }
+  .journey-pin.scenic {
+    width: 98vw;
+    font-size: 0.95rem;
+  }
+  .pin-content.scenic {
+    padding: 10px 8px;
+    font-size: 0.95rem;
+  }
+  .journey-pin.scenic.always-visible {
+    min-width: 80px;
+    max-width: 98vw;
+    font-size: 0.95rem;
+  }
+  .pin-content.scenic.card {
+    min-width: 60px;
+    max-width: 98vw;
+    font-size: 0.95rem;
+    padding: 8px 4px;
+  }
+  .journey-pin.scenic.always-visible.open .pin-content.scenic.card {
+    min-width: 100px;
+    max-width: 98vw;
+  }
+} 

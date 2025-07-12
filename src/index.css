@@ -27,6 +27,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #4fd1c5 0%, #4299e1 50%, #38a169 100%);
 }
 
 #root {
