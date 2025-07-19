@@ -60,4 +60,22 @@ export const healthAPI = {
   check: async () => {
     return await apiRequest('/health');
   },
+};
+
+// Auth API
+export const authAPI = {
+  register: async (username, email, password) => {
+    const data = await apiRequest('/signup', {
+      method: 'POST',
+      body: JSON.stringify({ username, email, password }),
+    });
+    return { user: { username, email }, ...data };
+  },
+  login: async (username, password) => {
+    const data = await apiRequest('/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+    return { user: { username }, token: data.token, ...data };
+  },
 }; 

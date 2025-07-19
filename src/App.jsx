@@ -1,12 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom'
 import { affirmationsAPI } from './api.js'
 import SavedAffirmations from './components/SavedAffirmations.jsx'
 import Journey from './components/Journey.jsx'
 import './App.css'
+import Auth from './components/Auth.jsx'
 
 function MainForm({
-  formData, setFormData, affirmation, setAffirmation, showResult, setShowResult, showSaved, setShowSaved, selectedAffirmation, setSelectedAffirmation, saving, setSaving, saveError, setSaveError, generateAffirmation, saveAffirmation, copyToClipboard, resetForm, handleSelectAffirmation
+  formData, setFormData, affirmation, setAffirmation, showResult, setShowResult, showSaved, setShowSaved, selectedAffirmation, setSelectedAffirmation, saving, setSaving, saveError, setSaveError, generateAffirmation, saveAffirmation, copyToClipboard, resetForm, handleSelectAffirmation,
+  user, handleLogout, showAuth, setShowAuth
 }) {
   const navigate = useNavigate();
 
@@ -30,6 +32,13 @@ function MainForm({
           <button onClick={handleJourneyClick} className="journey-btn">
             🛤️ My Journey
           </button>
+          {user ? (
+            <span className="user-info">👤 {user.username} <button className="logout-btn" onClick={handleLogout}>Log Out</button></span>
+          ) : (
+            <button className="login-btn" onClick={() => setShowAuth(true)}>
+              Sign Up / Log In
+            </button>
+          )}
         </div>
       </header>
       {!showResult ? (
@@ -143,6 +152,10 @@ function MainForm({
           onSelectAffirmation={handleSelectAffirmation}
         />
       )}
+      {/* Auth Modal */}
+      {showAuth && (
+        <Auth onAuthSuccess={() => {}} onClose={() => setShowAuth(false)} />
+      )}
     </div>
   )
 }
@@ -156,6 +169,31 @@ function App() {
     outcome: '',
     address: ''
   })
+  const [showAuth, setShowAuth] = useState(false);
+  const [user, setUser] = useState(() => {
+    // Persist user in localStorage
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
+
+  const handleAuthSuccess = (result) => {
+    setUser({ username: result.username, token: result.token });
+    setShowAuth(false);
+    setFormData(prev => ({ ...prev, username: result.username }));
+  };
+  const handleLogout = () => {
+    setUser(null);
+    setFormData(prev => ({ ...prev, username: '' }));
+  };
+
   const [affirmation, setAffirmation] = useState('')
   const [showResult, setShowResult] = useState(false)
   const [showSaved, setShowSaved] = useState(false)
@@ -265,7 +303,6 @@ function App() {
         `${fear} is like a cloud passing over the sun—temporary and powerless against your light`,
         `The ${fear} that once seemed so real is dissolving in the presence of your courage`,
         `Your fear of ${fear} is a teacher showing you where you're ready to grow`,
-        `${fear} is the universe's way of asking you to trust yourself more deeply`,
         `The ${fear} you carry is transforming into wisdom as you embrace your power`
       ] : [],
 
@@ -466,6 +503,10 @@ function App() {
           copyToClipboard={copyToClipboard}
           resetForm={resetForm}
           handleSelectAffirmation={handleSelectAffirmation}
+          user={user}
+          handleLogout={handleLogout}
+          showAuth={showAuth}
+          setShowAuth={setShowAuth}
         />
       } />
       <Route path="/journey" element={<JourneyPage />} />

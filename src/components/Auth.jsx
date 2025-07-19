@@ -35,11 +35,11 @@ function Auth({ onAuthSuccess, onClose }) {
       if (isLogin) {
         // Login
         const result = await authAPI.login(formData.username, formData.password);
-        onAuthSuccess(result.user);
+        onAuthSuccess(result); // <-- pass the whole result, not just result.user
       } else {
         // Register
         const result = await authAPI.register(formData.username, formData.email, formData.password);
-        onAuthSuccess(result.user);
+        onAuthSuccess(result);
       }
     } catch (error) {
       setError(error.message);

@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const app = express();
@@ -35,8 +37,64 @@ function initializeDatabase() {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Users table for authentication
+  db.run(`CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   console.log('Database tables initialized.');
 }
+
+// JWT secret
+const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret';
+
+// Signup endpoint
+app.post('/api/signup', (req, res) => {
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Username, email, and password are required' });
+  }
+  // Hash password
+  bcrypt.hash(password, 10, (err, hash) => {
+    if (err) return res.status(500).json({ error: 'Error hashing password' });
+    db.run(
+      `INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)`,
+      [username, email, hash],
+      function(err) {
+        if (err) {
+          if (err.message.includes('UNIQUE')) {
+            return res.status(409).json({ error: 'Username or email already exists' });
+          }
+          return res.status(500).json({ error: 'Error creating user' });
+        }
+        res.status(201).json({ message: 'User created successfully' });
+      }
+    );
+  });
+});
+
+// Login endpoint
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Username and password are required' });
+  }
+  db.get(`SELECT * FROM users WHERE username = ?`, [username], (err, user) => {
+    if (err) return res.status(500).json({ error: 'Error fetching user' });
+    if (!user) return res.status(401).json({ error: 'Invalid username or password' });
+    bcrypt.compare(password, user.password_hash, (err, result) => {
+      if (err) return res.status(500).json({ error: 'Error checking password' });
+      if (!result) return res.status(401).json({ error: 'Invalid username or password' });
+      // Generate JWT
+      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+      res.json({ message: 'Login successful', token, username: user.username });
+    });
+  });
+});
 
 // Routes
 
