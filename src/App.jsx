@@ -8,7 +8,7 @@ import Auth from './components/Auth.jsx'
 
 function MainForm({
   formData, setFormData, affirmation, setAffirmation, showResult, setShowResult, showSaved, setShowSaved, selectedAffirmation, setSelectedAffirmation, saving, setSaving, saveError, setSaveError, generateAffirmation, saveAffirmation, copyToClipboard, resetForm, handleSelectAffirmation,
-  user, handleLogout, showAuth, setShowAuth
+  user, handleLogout, showAuth, setShowAuth, handleAuthSuccess
 }) {
   const navigate = useNavigate();
 
@@ -154,7 +154,7 @@ function MainForm({
       )}
       {/* Auth Modal */}
       {showAuth && (
-        <Auth onAuthSuccess={() => {}} onClose={() => setShowAuth(false)} />
+        <Auth onAuthSuccess={handleAuthSuccess} onClose={() => setShowAuth(false)} />
       )}
     </div>
   )
@@ -507,6 +507,7 @@ function App() {
           handleLogout={handleLogout}
           showAuth={showAuth}
           setShowAuth={setShowAuth}
+          handleAuthSuccess={handleAuthSuccess}
         />
       } />
       <Route path="/journey" element={<JourneyPage />} />
