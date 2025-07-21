@@ -54,7 +54,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'changeme_secret';
 
 // Signup endpoint
 app.post('/api/signup', (req, res) => {
-  const { username, email, password } = req.body;
+  const { email, password } = req.body;
+  const username = req.body.username.toLowerCase();
   if (!username || !email || !password) {
     return res.status(400).json({ error: 'Username, email, and password are required' });
   }
@@ -79,7 +80,8 @@ app.post('/api/signup', (req, res) => {
 
 // Login endpoint
 app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
+  const { password } = req.body;
+  const username = req.body.username.toLowerCase();
   if (!username || !password) {
     return res.status(400).json({ error: 'Username and password are required' });
   }

@@ -13,11 +13,11 @@ function MainForm({
   const navigate = useNavigate();
 
   const handleJourneyClick = () => {
-    if (!formData.username.trim()) {
-      alert('Please enter your name to view your journey.');
+    if (!user) {
+      alert('Please log in to view your journey.');
       return;
     }
-    navigate(`/journey?username=${encodeURIComponent(formData.username)}`);
+    navigate(`/journey?username=${encodeURIComponent(user.username)}`);
   };
 
   return (
@@ -26,9 +26,6 @@ function MainForm({
         <h1>✨ Custom Affirmation Generator ✨</h1>
         <p>Create your personalized affirmation to manifest your dreams</p>
         <div className="user-menu">
-          <button onClick={() => setShowSaved(true)} className="saved-btn">
-            📚 Saved Affirmations
-          </button>
           <button onClick={handleJourneyClick} className="journey-btn">
             🛤️ My Journey
           </button>
@@ -44,18 +41,6 @@ function MainForm({
       {!showResult ? (
         <div className="form-container">
           <form onSubmit={(e) => { e.preventDefault(); generateAffirmation(); }}>
-            <div className="form-group">
-              <label htmlFor="username">Your Name (to save affirmations)</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={e => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                placeholder="Enter your name..."
-                required
-              />
-            </div>
             <div className="form-group">
               <label htmlFor="desire">What do you want at the moment in your life?</label>
               <textarea
@@ -420,8 +405,8 @@ function App() {
   }
 
   const saveAffirmation = async () => {
-    if (!formData.username.trim()) {
-      setSaveError('Please enter a username to save your affirmation')
+    if (!user) {
+      setSaveError('Please log in to save your affirmation')
       return
     }
 

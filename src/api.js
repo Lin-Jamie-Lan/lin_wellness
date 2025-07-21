@@ -65,6 +65,7 @@ export const healthAPI = {
 // Auth API
 export const authAPI = {
   register: async (username, email, password) => {
+    username = username.toLowerCase();
     const data = await apiRequest('/signup', {
       method: 'POST',
       body: JSON.stringify({ username, email, password }),
@@ -72,6 +73,7 @@ export const authAPI = {
     return { user: { username, email }, ...data };
   },
   login: async (username, password) => {
+    username = username.toLowerCase();
     const data = await apiRequest('/login', {
       method: 'POST',
       body: JSON.stringify({ username, password }),
